@@ -54,7 +54,15 @@ int main()
 		string command = parameters[0];
 
 		if (command.compare("menu") == 0) {
-			cout << menu.toString();
+			if (parameters.size() > 1) {
+				if (parameters[1].compare("ascending") == 0) {
+					cout << menu.toStringAscending();
+				} else if (parameters[1].compare("descending") == 0) {
+					cout << menu.toStringDescending();
+				}
+			} else {
+				cout << menu.toString();
+			}
 		}
 		else if (command.compare("add") == 0)
 		{
@@ -67,28 +75,31 @@ int main()
 					std::cout << "Invalid item ID: " << parameters[i] << ". Please make sure to enter a numeric ID Separated by a space." << std::endl;
 				}
 			}
-			cout <<"new order: \n"<< order.toString();
 		}
 		else if (command.compare("remove") == 0)
 		{
 			for (int i = 1; i < parameters.size(); i++) {
 				try {
-					int itemId = std::stoi(parameters[i]); // Convert string to int
+					const int itemId = std::stoi(parameters[i]); // Convert string to int
 					order.removeItem(itemId);
 				}
 				catch (const std::invalid_argument& e) {
-					std::cout << "Invalid item ID: " << parameters[i] << ". Please make sure to enter a numeric ID Separated by a space." << std::endl;
+					std::cout << "Invalid item ID: " << parameters[i] << ". Please make sure to enter a numeric IDs Separated by a space." << std::endl;
 				}
 			}
-			cout <<"new order: \n"<< order.toString();
 		}
 		else if (command.compare("checkout") == 0)
 		{
-
+			order.checkout();
 		}
-		else if (command.compare("help") == 0)
-		{
-
+		else if (command.compare("help") == 0) {
+			cout << "Available commands:\n";
+			cout << "  menu [ascending/descending] - Display the menu. Optionally sort by price in ascending or descending order.\n";
+			cout << "  add [item ID] [item ID] ... - Add one or more items to your order by their ID.\n";
+			cout << "  remove [item ID] [item ID] ... - Remove one or more items from your order by their ID.\n";
+			cout << "  checkout - Proceed to checkout, displaying the order and total price. Confirm to complete the order.\n";
+			cout << "  exit - Exit the program.\n";
+			cout << "  help - Display this help message.\n";
 		}
 
 		parameters.clear();

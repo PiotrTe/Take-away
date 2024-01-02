@@ -1,4 +1,6 @@
 #include "ItemList.h"
+
+#include <algorithm>
 #include "Appetiser.h"
 #include "MainCourse.h"
 #include "Beverage.h"
@@ -6,6 +8,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
+#include <map>
 
 ItemList::ItemList() {}
 
@@ -37,11 +40,12 @@ std::shared_ptr<Item> ItemList::getItemById(const int id) const
 void ItemList::loadFromCsv(const std::string& filePath) {
     std::ifstream file(filePath);
     std::string line;
-    int counter = 1;
 
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + filePath);
     }
+
+    std::vector<std::shared_ptr<Item>> tempItems;
 
     while (std::getline(file, line)) {
         std::istringstream ss(line);
@@ -52,19 +56,16 @@ void ItemList::loadFromCsv(const std::string& filePath) {
             tokens.push_back(token);
         }
 
+        // Assuming all tokens are present and valid for simplification
         char type = tokens[0][0];
         std::string name = tokens[1];
-        double price = !tokens[2].empty() ? std::stod(tokens[2]) : 0.0;
-        int calories = !tokens[3].empty() ? std::stoi(tokens[3]) : 0;
+        double price = std::stod(tokens[2]);
+        int calories = std::stoi(tokens[3]);
         bool shareable = tokens[4] == "y";
         bool twoForOne = tokens[5] == "y";
-        int volume = 0;
-        double abv = 0.0;
-
-        if (tokens.size() == 8) {
-            volume = !tokens[6].empty() ? std::stoi(tokens[6]) : 0;
-            abv = !tokens[7].empty() ? std::stod(tokens[7]) : 0.0;
-        }
+        // Additional attributes for beverages if present
+        int volume = (tokens.size() > 6 && !tokens[6].empty()) ? std::stoi(tokens[6]) : 0;
+        double abv = (tokens.size() > 7 && !tokens[7].empty()) ? std::stod(tokens[7]) : 0.0;
 
         std::shared_ptr<Item> item;
         switch (type) {
@@ -81,8 +82,35 @@ void ItemList::loadFromCsv(const std::string& filePath) {
                 std::cerr << "Unknown item type: " << type << " in line: " << line << '\n';
                 continue; // Skip this line
         }
-        addItemId(counter, item);
-        counter++;  // increment the counter at the end of each loop
+        tempItems.push_back(item);
     }
+
+    std::sort(tempItems.begin(), tempItems.end(),
+        [](const std::shared_ptr<Item>& a, const std::shared_ptr<Item>& b) -> bool {
+            // Map type characters to sorting orders
+            static const std::map<char, int> sortOrder = {
+                {'a', 1}, // Appetisers
+                {'m', 2}, // Main Courses
+                {'b', 3}  // Beverages
+            };
+
+            char typeA = a->getType();
+            char typeB = b->getType();
+
+            // Find the sorting order for each type
+            int orderA = sortOrder.count(typeA) ? sortOrder.at(typeA) : 4;
+            int orderB = sortOrder.count(typeB) ? sortOrder.at(typeB) : 4;
+
+            // Compare based on defined sorting order
+            return orderA < orderB;
+        }
+    );
+
+    // Assign IDs to the sorted items and add them to the list
+    int counter = 1;
+    for (auto& item : tempItems) {
+        addItemId(counter++, item);
+    }
+
     file.close();
 }
