@@ -7,14 +7,13 @@
 #include <vector>
 #include <algorithm> // added for sorting
 #include <fstream>
-
-class Appetiser;
-
+// Constructor initializes an Order with a list of menu items.
 Order::Order(std::vector<std::pair<int, std::shared_ptr<Item>>> list)
 {
     items = std::move(list);
 }
 
+// Method to add an item to the order by ID.
 void Order::addItem(int id) {
     if (id < 1 || id > items.size()) { // added range validation
         std::cout << "Invalid ID: " << id << ". Must be between 1 and " << items.size() << ".\n";
@@ -30,6 +29,7 @@ void Order::addItem(int id) {
     }
 }
 
+// Method to remove an item from the order by ID.
 void Order::removeItem(int id){
     auto item = std::find_if(orderedItems.begin(), orderedItems.end(),
        [&id](const std::pair<int, std::shared_ptr<Item>>& element) {
@@ -43,7 +43,7 @@ void Order::removeItem(int id){
     }
 }
 
-
+// Method to print a receipt of the current order.
 std::string Order::printReceipt() const {
     std::ostringstream receipt;
 
@@ -63,6 +63,7 @@ std::string Order::printReceipt() const {
     return receipt.str();
 }
 
+// Method for the checkout process of the order.
 void Order::checkout() {
     std::string receipt = printReceipt();
     std::cout << receipt;
@@ -80,7 +81,7 @@ void Order::checkout() {
         std::cout << "Order not confirmed. You can modify your order and try again.\n";
     }
 }
-// Implemented calculateTotal function to sum all prices in orderedItems list
+// Method to calculate the total price of the order, including discounts.
 std::pair<double, double> Order::calculateTotal() const {
     std::vector<double> twoForOnePrices;
     total = 0;
@@ -113,40 +114,31 @@ std::pair<double, double> Order::calculateTotal() const {
 
     return {total, savings};
 }
+
+// Method to write the receipt to a file.
 void Order::writeReceiptToFile(const std::string& receipt, const std::string& filename)
 {
-    // Open the file in write mode. This will overwrite any existing file.
     std::ofstream outFile(filename);
-
-    // Check if the file is open.
     if (!outFile.is_open()) {
         throw std::runtime_error("Could not open file: " + filename);
     }
-
-    // Write the receipt to the file.
     outFile << receipt;
-
-    // Close the file.
     outFile.close();
 }
 
+// Method to return a string representation of the order.
 std::string Order::toString() const {
-    // Make a copy of the orderedItems vector to sort, because this method is const
     auto sortedItems = orderedItems;
+    
     std::sort(sortedItems.begin(), sortedItems.end(),
         [](const std::pair<int, std::shared_ptr<Item>>& a, const std::pair<int, std::shared_ptr<Item>>& b) {
-            return a.first < b.first;
-        });
-
-    // We call calculateTotal here to ensure total is updated.
-    const std::pair<double, double> totals = calculateTotal(); 
-
+            return a.first < b.first;});
+    const std::pair<double, double> totals = calculateTotal();
     std::ostringstream oss;
+    
     for (const auto& itemPair : sortedItems) {
         oss << std::setw(2) << itemPair.first << ". " << itemPair.second->toString() << "\n";
     }
-
-    // Use the values returned from calculateTotal function.
     oss << "Total price: " << totals.first << "$" << "\n" << "Applied discount: " << totals.second << "$" << "\n";
 
     return oss.str();

@@ -9,14 +9,12 @@
 #include <stdexcept>
 #include <iostream>
 #include <map>
-
-ItemList::ItemList() {}
-
-void ItemList::addItemId(int id, const std::shared_ptr<Item>& item)
-{
+// Method to add an item with its ID to the list
+void ItemList::addItemId(int id, const std::shared_ptr<Item>& item) {
     items.emplace_back(id, item);
 }
 
+// Method to generate a string representation of all items in the list
 std::string ItemList::toString() const {
     std::ostringstream oss;
     for (const auto& pair : items) {
@@ -25,18 +23,17 @@ std::string ItemList::toString() const {
     return oss.str();
 }
 
-std::shared_ptr<Item> ItemList::getItemById(const int id) const
-{
-    for (const auto& pair : items) 
-    {
-        if(pair.first == id) 
-        {
+// Method to get an item by its ID
+std::shared_ptr<Item> ItemList::getItemById(const int id) const {
+    for (const auto& pair : items) {
+        if(pair.first == id) {
             return pair.second;
         }
     }
     throw std::runtime_error("Item with id " + std::to_string(id) + " doesn't exist");
 }
 
+// Method to load items from a CSV file and add them to the list
 void ItemList::loadFromCsv(const std::string& filePath) {
     std::ifstream file(filePath);
     std::string line;
@@ -48,6 +45,7 @@ void ItemList::loadFromCsv(const std::string& filePath) {
     std::vector<std::shared_ptr<Item>> tempItems;
 
     while (std::getline(file, line)) {
+        // Parsing each line of the CSV file
         std::istringstream ss(line);
         std::vector<std::string> tokens;
         std::string token;
@@ -56,14 +54,13 @@ void ItemList::loadFromCsv(const std::string& filePath) {
             tokens.push_back(token);
         }
 
-        // Assuming all tokens are present and valid for simplification
+        // Processing each line to create corresponding Item objects
         char type = tokens[0][0];
         std::string name = tokens[1];
         double price = std::stod(tokens[2]);
         int calories = std::stoi(tokens[3]);
         bool shareable = tokens[4] == "y";
         bool twoForOne = tokens[5] == "y";
-        // Additional attributes for beverages if present
         int volume = (tokens.size() > 6 && !tokens[6].empty()) ? std::stoi(tokens[6]) : 0;
         double abv = (tokens.size() > 7 && !tokens[7].empty()) ? std::stod(tokens[7]) : 0.0;
 
@@ -84,7 +81,7 @@ void ItemList::loadFromCsv(const std::string& filePath) {
         }
         tempItems.push_back(item);
     }
-
+    // Sort the items before adding them to the list
     std::sort(tempItems.begin(), tempItems.end(),
         [](const std::shared_ptr<Item>& a, const std::shared_ptr<Item>& b) -> bool {
             // Map type characters to sorting orders
@@ -112,5 +109,5 @@ void ItemList::loadFromCsv(const std::string& filePath) {
         addItemId(counter++, item);
     }
 
-    file.close();
+    file.close(); // Close the file after processing
 }
