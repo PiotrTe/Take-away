@@ -111,12 +111,12 @@ int main()
             cout << "  exit - Exit the program.\n";
             cout << "  help - Display this help message.\n";
         }
+        else
+        {
+            cout << "Invalid command: " << command << ". Type 'help' to see a list of available commands." << '\n';
+        }
 
         // Clear the parameters for the next command
         parameters.clear();
     }
-
-    // End of program message
-    cout << "Press any key to quit...";
-    std::getchar();
 }
