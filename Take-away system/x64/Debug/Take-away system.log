@@ -1,1 +1,12 @@
-﻿
+﻿  Appetiser.cpp
+  Beverage.cpp
+  Item.cpp
+  ItemList.cpp
+  MainCourse.cpp
+  Menu.cpp
+  Order.cpp
+  Take-away system.cpp
+C:\Users\piotr\Desktop\Applied programming paradigms\Take away system assignemnt\Take away\Take-away system\Take-away system.cpp(80,53): warning C4101: 'e': unreferenced local variable
+C:\Users\piotr\Desktop\Applied programming paradigms\Take away system assignemnt\Take away\Take-away system\Take-away system.cpp(94,53): warning C4101: 'e': unreferenced local variable
+  Generating Code...
+  Take-away system.vcxproj -> C:\Users\piotr\Desktop\Applied programming paradigms\Take away system assignemnt\Take away\x64\Debug\Take-away system.exe

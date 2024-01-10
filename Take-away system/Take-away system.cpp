@@ -41,6 +41,13 @@ int main()
     while (userCommand != "exit")
     {
         getline(cin, userCommand);
+
+        // Skip if input is empty
+        if (userCommand.empty()) {
+            cout << "No input entered. Please enter a command." << endl;
+            continue;
+        }
+        
         char* cstr = new char[userCommand.length() + 1];
         strcpy(cstr, userCommand.c_str());
 
@@ -69,7 +76,7 @@ int main()
             }
         }
         // Process the 'add' command
-        else if (command.compare("add") == 0)
+        if (command.compare("add") == 0)
         {
             // Add items to the order
             for (int i = 1; i < parameters.size(); i++) {
@@ -79,6 +86,9 @@ int main()
                 }
                 catch (const std::invalid_argument& e) {
                     std::cout << "Invalid item ID: " << parameters[i] << ". Please make sure to enter a numeric ID Separated by a space." << std::endl;
+                }
+                catch (const std::out_of_range& e) {
+                    std::cout << "Item ID is too large: " << parameters[i] << ". Please enter a valid ID." << std::endl;
                 }
             }
         }
@@ -93,6 +103,9 @@ int main()
                 }
                 catch (const std::invalid_argument& e) {
                     std::cout << "Invalid item ID: " << parameters[i] << ". Please make sure to enter a numeric IDs Separated by a space." << std::endl;
+                }
+                catch (const std::out_of_range& e) {
+                    std::cout << "Item ID is too large: " << parameters[i] << ". Please enter a valid ID." << std::endl;
                 }
             }
         }
