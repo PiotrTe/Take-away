@@ -31,7 +31,7 @@ int main()
     vector <string> parameters;
 
     // Display welcome message
-    cout << "Welcome to the restaurant type <help> to view all available commands\n";
+    cout << "Welcome to the restaurant type 'help' to view all available commands\n";
     
     // Initialize Menu and Order objects
     Menu menu = Menu("menu.csv");
